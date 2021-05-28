@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.2.xsd   
+        http://www.springframework.org/schema/mvc   
+        http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd   
+        http://www.springframework.org/schema/context   
+        http://www.springframework.org/schema/context/spring-context-3.2.xsd   
+        http://www.springframework.org/schema/aop   
+        http://www.springframework.org/schema/aop/spring-aop-3.2.xsd   
+        http://www.springframework.org/schema/tx   
+        http://www.springframework.org/schema/tx/spring-tx-3.2.xsd ">
+
+    <!-- 事务管理器 对mybatis操作数据库事务控制，spring使用jdbc的事务控制类 -->
+
+    <bean id="transactionManager"
+          class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <!-- 数据源(连接数据库才会进行事物操作) dataSource在applicationContext-dao.xml中配置了 -->
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    <!-- 配置通知 -->
+    <tx:advice id="txAdvice"
+               transaction-manager="transactionManager">
+        <tx:attributes>
+            <!-- 必须要进行事务的 -->
+            <tx:method name="save*" propagation="REQUIRED"/>
+            <tx:method name="delete*" propagation="REQUIRED"/>
+            <tx:method name="insert*" propagation="REQUIRED"/>
+            <tx:method name="update*" propagation="REQUIRED"/>
+            <!--如果当前没有事务，就以非事务方式执行。 -->
+            <tx:method name="find*" propagation="SUPPORTS"
+                       read-only="true"/>
+            <tx:method name="get*" propagation="SUPPORTS"
+                       read-only="true"/>
+            <tx:method name="select*" propagation="SUPPORTS"
+                       read-only="true"/>
+        </tx:attributes>
+    </tx:advice>
+
+
+    <!-- 配置切面aop 对service进行切面管理，也就是所有的service中的所有方法的，所有属性进行事务管理-->
+    <aop:config>
+        <aop:advisor advice-ref="txAdvice" pointcut="execution(* com.zou.service.*.*.*(..))"/>
+    </aop:config>
+
+</beans>
