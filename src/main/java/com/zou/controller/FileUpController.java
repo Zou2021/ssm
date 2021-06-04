@@ -11,10 +11,11 @@ import java.io.IOException;
 /**
  * @author: 邹祥发
  * @date: 2021/6/4 14:51
+ * 文件上传
  */
 @Controller
 @RequestMapping("/upload")
-public class FileController {
+public class FileUpController {
 
     @RequestMapping("/singleFileUpload.do")
     public String singleFileUpload(MultipartFile files) throws IOException {
@@ -25,9 +26,11 @@ public class FileController {
             String path2 = files.getOriginalFilename();
             assert path2 != null;
             String suffix = path2.substring(path2.lastIndexOf("."));
-            System.out.println(suffix);
+            System.out.println("文件的类型："+suffix);
             String upPath = path + path2;
             files.transferTo(new File(upPath));
+            System.out.println("文件保存的路径："+upPath);
+            System.out.println("-----------");
             return "success";
 
         } else {
@@ -42,9 +45,11 @@ public class FileController {
         if (files != null) {
             for (MultipartFile file : files) {
                 String path2 = file.getOriginalFilename();
-                System.out.println(path2);
+                System.out.println("文件名："+path2);
                 String upPath = path + path2;
                 file.transferTo(new File(upPath));
+                System.out.println("文件保存的路径："+upPath);
+                System.out.println("-----------");
             }
             return "success";
         } else {
